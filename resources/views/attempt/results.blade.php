@@ -173,7 +173,7 @@
             </div>
         </div>
         
-        <!-- <div class="col-md-3">
+        <div class="col-md-3">
             <div class="stat-box">
                 <div class="stat-icon">
                     <i class="bi bi-clock-history text-info"></i>
@@ -181,7 +181,7 @@
                 <div class="stat-value">{{ formatTime($attempt->time_taken, 'full') }}</div>
                 <div class="stat-label">Time Taken</div>
             </div>
-        </div> -->
+        </div>
     </div>
 
     <!-- Performance Chart -->

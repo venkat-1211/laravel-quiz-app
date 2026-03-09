@@ -11,6 +11,7 @@ use App\Repositories\Interfaces\QuizRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AttemptService implements AttemptServiceInterface
 {
@@ -163,7 +164,7 @@ class AttemptService implements AttemptServiceInterface
             $attempt->calculateScore();
             
             // Calculate time taken properly
-            $timeTaken = now()->diffInSeconds($attempt->started_at);
+            $timeTaken = Carbon::parse($attempt->started_at)->diffInSeconds(now());
             
             // Mark as completed
             $attempt->status = 'completed';
@@ -211,7 +212,7 @@ class AttemptService implements AttemptServiceInterface
             
             $attempt->status = 'timed_out';
             $attempt->completed_at = now();
-            $attempt->time_taken = now()->diffInSeconds($attempt->started_at);
+            $attempt->time_taken = Carbon::parse($attempt->started_at)->diffInSeconds(now());
             $attempt->save();
             
             // Calculate score for timed out attempt
@@ -352,7 +353,7 @@ class AttemptService implements AttemptServiceInterface
             
             if ($attempt->quiz && $attempt->quiz->time_limit > 0) {
                 $timeLimitInSeconds = $attempt->quiz->time_limit * 60;
-                $timeElapsed = now()->diffInSeconds($attempt->started_at);
+                $timeElapsed = Carbon::parse($attempt->started_at)->diffInSeconds(now());
                 $timeRemaining = max(0, $timeLimitInSeconds - $timeElapsed);
                 $timePercentage = $timeLimitInSeconds > 0 
                     ? max(0, ($timeRemaining / $timeLimitInSeconds) * 100) 
@@ -374,7 +375,7 @@ class AttemptService implements AttemptServiceInterface
                 'time_remaining_formatted' => $timeRemaining ? gmdate('H:i:s', $timeRemaining) : null,
                 'time_percentage' => round($timePercentage, 2),
                 'started_at' => $attempt->started_at->toDateTimeString(),
-                'elapsed_time' => now()->diffInSeconds($attempt->started_at),
+                'elapsed_time' => Carbon::parse($attempt->started_at)->diffInSeconds(now()),
             ];
         });
     }
@@ -746,7 +747,7 @@ class AttemptService implements AttemptServiceInterface
         // Check if attempt has exceeded time limit
         if ($attempt->quiz && $attempt->quiz->time_limit > 0) {
             $timeLimitInSeconds = $attempt->quiz->time_limit * 60;
-            $timeElapsed = now()->diffInSeconds($attempt->started_at);
+            $timeElapsed = Carbon::parse($attempt->started_at)->diffInSeconds(now());
             
             if ($timeElapsed > $timeLimitInSeconds) {
                 return false;
