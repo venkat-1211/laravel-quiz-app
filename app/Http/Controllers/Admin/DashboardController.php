@@ -12,13 +12,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Statistics
         $totalUsers = User::count();
         $totalQuizzes = Quiz::count();
         $totalAttempts = Attempt::count();
         $activeQuizzes = Quiz::where('is_published', true)->count();
         
-        // Charts data
         $attemptsPerDay = $this->getAttemptsPerDay();
         $averageScorePerQuiz = $this->getAverageScorePerQuiz();
         $topUsers = $this->getTopUsers();

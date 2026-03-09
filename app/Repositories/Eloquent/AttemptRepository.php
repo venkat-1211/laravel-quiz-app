@@ -10,12 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class AttemptRepository implements AttemptRepositoryInterface
 {
-    /**
-     * Find attempt by ID.
-     *
-     * @param int $id
-     * @return Attempt|null
-     */
     public function findById(int $id): ?Attempt
     {
         return Cache::remember("attempt.id.{$id}", 3600, function () use ($id) {
@@ -23,12 +17,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         });
     }
 
-    /**
-     * Find attempt with all details (answers, questions, etc).
-     *
-     * @param int $id
-     * @return Attempt|null
-     */
     public function findWithDetails(int $id): ?Attempt
     {
         return Cache::remember("attempt.details.{$id}", 3600, function () use ($id) {
@@ -41,13 +29,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         });
     }
 
-    /**
-     * Find in-progress attempt for user on a quiz.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return Attempt|null
-     */
     public function findInProgress(int $userId, int $quizId): ?Attempt
     {
         return Attempt::where('user_id', $userId)
@@ -56,12 +37,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->first();
     }
 
-    /**
-     * Create a new attempt.
-     *
-     * @param array $data
-     * @return Attempt
-     */
     public function create(array $data): Attempt
     {
         $attempt = Attempt::create($data);
@@ -72,13 +47,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $attempt;
     }
 
-    /**
-     * Update an existing attempt.
-     *
-     * @param int $id
-     * @param array $data
-     * @return Attempt
-     */
     public function update(int $id, array $data): Attempt
     {
         $attempt = $this->findById($id);
@@ -95,12 +63,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $attempt;
     }
 
-    /**
-     * Delete an attempt.
-     *
-     * @param int $id
-     * @return bool
-     */
     public function delete(int $id): bool
     {
         $attempt = $this->findById($id);
@@ -118,13 +80,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get all attempts by user with pagination.
-     *
-     * @param int $userId
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getByUser(int $userId, int $perPage = 15): LengthAwarePaginator
     {
         return Attempt::with(['quiz.category'])
@@ -133,13 +88,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get all attempts by quiz with pagination.
-     *
-     * @param int $quizId
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getByQuiz(int $quizId, int $perPage = 15): LengthAwarePaginator
     {
         return Attempt::with(['user'])
@@ -148,13 +96,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get completed attempts by user.
-     *
-     * @param int $userId
-     * @param int $limit
-     * @return array
-     */
     public function getCompletedByUser(int $userId, int $limit = 10): array
     {
         return Attempt::with(['quiz'])
@@ -166,13 +107,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get attempts by date range.
-     *
-     * @param string $startDate
-     * @param string $endDate
-     * @return array
-     */
     public function getByDateRange(string $startDate, string $endDate): array
     {
         return Attempt::with(['user', 'quiz'])
@@ -182,12 +116,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get attempts statistics for a quiz.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getQuizStats(int $quizId): array
     {
         return Cache::remember("attempt.quiz.stats.{$quizId}", 3600, function () use ($quizId) {
@@ -238,13 +166,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         });
     }
 
-    /**
-     * Get user's best attempts.
-     *
-     * @param int $userId
-     * @param int $limit
-     * @return array
-     */
     public function getUserBestAttempts(int $userId, int $limit = 5): array
     {
         return Attempt::with(['quiz'])
@@ -256,13 +177,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get user's recent attempts.
-     *
-     * @param int $userId
-     * @param int $limit
-     * @return array
-     */
     public function getUserRecentAttempts(int $userId, int $limit = 5): array
     {
         return Attempt::with(['quiz'])
@@ -273,12 +187,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get attempts count by status.
-     *
-     * @param int $userId
-     * @return array
-     */
     public function getAttemptsCountByStatus(int $userId): array
     {
         $counts = Attempt::where('user_id', $userId)
@@ -294,12 +202,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get average score per quiz for user.
-     *
-     * @param int $userId
-     * @return array
-     */
     public function getAverageScorePerQuiz(int $userId): array
     {
         return Attempt::where('user_id', $userId)
@@ -317,13 +219,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get top scores for a quiz.
-     *
-     * @param int $quizId
-     * @param int $limit
-     * @return array
-     */
     public function getTopScores(int $quizId, int $limit = 10): array
     {
         return Attempt::with('user')
@@ -335,13 +230,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Count completed attempts by user and quiz.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return int
-     */
     public function countCompletedByUserAndQuiz(int $userId, int $quizId): int
     {
         return Attempt::where('user_id', $userId)
@@ -350,12 +238,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->count();
     }
 
-    /**
-     * Get attempts trend over time.
-     *
-     * @param int $days
-     * @return array
-     */
     public function getAttemptsTrend(int $days = 30): array
     {
         $startDate = now()->subDays($days)->startOfDay();
@@ -395,13 +277,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get attempts by difficulty level.
-     *
-     * @param string $difficulty
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getByDifficulty(string $difficulty, int $perPage = 15): LengthAwarePaginator
     {
         return Attempt::with(['user', 'quiz'])
@@ -413,13 +288,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get attempts by category.
-     *
-     * @param int $categoryId
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getByCategory(int $categoryId, int $perPage = 15): LengthAwarePaginator
     {
         return Attempt::with(['user', 'quiz'])
@@ -431,12 +299,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get attempts needing review.
-     *
-     * @param int $threshold
-     * @return array
-     */
     public function getAttemptsNeedingReview(int $threshold = 50): array
     {
         return Attempt::with(['user', 'quiz'])
@@ -448,13 +310,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get user's improvement over time.
-     *
-     * @param int $userId
-     * @param int $limit
-     * @return array
-     */
     public function getUserImprovementTrend(int $userId, int $limit = 10): array
     {
         return Attempt::where('user_id', $userId)
@@ -465,12 +320,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get average completion time per quiz.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getAverageCompletionTime(int $quizId): float
     {
         return (float) Attempt::where('quiz_id', $quizId)
@@ -478,12 +327,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->avg('time_taken') ?? 0;
     }
 
-    /**
-     * Get pass rate for a quiz.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getPassRate(int $quizId): float
     {
         $total = Attempt::where('quiz_id', $quizId)
@@ -505,12 +348,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($passed / $total) * 100, 2);
     }
 
-    /**
-     * Get completion rate (completed vs started).
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getCompletionRate(int $quizId): float
     {
         $total = Attempt::where('quiz_id', $quizId)->count();
@@ -526,12 +363,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($completed / $total) * 100, 2);
     }
 
-    /**
-     * Get daily attempt counts.
-     *
-     * @param int $days
-     * @return array
-     */
     public function getDailyAttemptCounts(int $days = 7): array
     {
         $startDate = now()->subDays($days)->startOfDay();
@@ -562,11 +393,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get hourly attempt distribution.
-     *
-     * @return array
-     */
     public function getHourlyDistribution(): array
     {
         $distribution = Attempt::select(
@@ -590,11 +416,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get weekday distribution.
-     *
-     * @return array
-     */
     public function getWeekdayDistribution(): array
     {
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -620,12 +441,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get monthly attempt statistics.
-     *
-     * @param int $year
-     * @return array
-     */
     public function getMonthlyStats(int $year = null): array
     {
         $year = $year ?? now()->year;
@@ -659,12 +474,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get recent activity feed.
-     *
-     * @param int $limit
-     * @return array
-     */
     public function getRecentActivity(int $limit = 20): array
     {
         return Attempt::with(['user', 'quiz'])
@@ -688,13 +497,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get user ranking among peers.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return array
-     */
     public function getUserRanking(int $userId, int $quizId): array
     {
         $attempt = Attempt::where('user_id', $userId)
@@ -733,13 +535,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get peer comparison.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return array
-     */
     public function getPeerComparison(int $userId, int $quizId): array
     {
         $userAttempts = Attempt::where('user_id', $userId)
@@ -765,12 +560,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get attempt metadata.
-     *
-     * @param int $attemptId
-     * @return array
-     */
     public function getAttemptMetadata(int $attemptId): array
     {
         $attempt = $this->findWithDetails($attemptId);
@@ -789,13 +578,7 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get attempts by IP address.
-     *
-     * @param string $ip
-     * @param int $limit
-     * @return array
-     */
+
     public function getByIp(string $ip, int $limit = 50): array
     {
         return Attempt::with(['user', 'quiz'])
@@ -806,11 +589,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get suspicious attempts (multiple attempts from same IP, etc).
-     *
-     * @return array
-     */
     public function getSuspiciousAttempts(): array
     {
         $suspiciousIps = Attempt::select('ip_address', DB::raw('COUNT(*) as attempt_count'))
@@ -832,12 +610,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Export attempts for reporting.
-     *
-     * @param array $filters
-     * @return array
-     */
     public function exportForReporting(array $filters = []): array
     {
         $query = Attempt::with(['user', 'quiz.category'])
@@ -883,31 +655,16 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get attempt count by hour of day.
-     *
-     * @return array
-     */
     public function getCountByHour(): array
     {
         return $this->getHourlyDistribution();
     }
 
-    /**
-     * Get attempt count by day of week.
-     *
-     * @return array
-     */
     public function getCountByDayOfWeek(): array
     {
         return $this->getWeekdayDistribution();
     }
 
-    /**
-     * Get average score by hour.
-     *
-     * @return array
-     */
     public function getAverageScoreByHour(): array
     {
         $scores = Attempt::select(
@@ -932,11 +689,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get average score by day of week.
-     *
-     * @return array
-     */
     public function getAverageScoreByDayOfWeek(): array
     {
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -963,12 +715,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get success rate trend.
-     *
-     * @param int $days
-     * @return array
-     */
     public function getSuccessRateTrend(int $days = 30): array
     {
         $startDate = now()->subDays($days)->startOfDay();
@@ -1002,12 +748,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get first attempt success rate.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getFirstAttemptSuccessRate(int $quizId): float
     {
         $firstAttempts = DB::table('attempts')
@@ -1029,12 +769,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($successful / $firstAttempts->count()) * 100, 2);
     }
 
-    /**
-     * Get retry improvement rate.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getRetryImprovementRate(int $quizId): float
     {
         $usersWithRetries = Attempt::where('quiz_id', $quizId)
@@ -1069,15 +803,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $userCount > 0 ? round($totalImprovement / $userCount, 2) : 0;
     }
 
-    /**
-     * Get attempts by score range.
-     *
-     * @param int $quizId
-     * @param int $minScore
-     * @param int $maxScore
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getByScoreRange(int $quizId, int $minScore, int $maxScore, int $perPage = 15): LengthAwarePaginator
     {
         return Attempt::with(['user'])
@@ -1088,15 +813,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get attempts by time range.
-     *
-     * @param int $quizId
-     * @param int $minTime
-     * @param int $maxTime
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getByTimeRange(int $quizId, int $minTime, int $maxTime, int $perPage = 15): LengthAwarePaginator
     {
         return Attempt::with(['user'])
@@ -1107,14 +823,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get user's attempt history with filters.
-     *
-     * @param int $userId
-     * @param array $filters
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getUserHistory(int $userId, array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = Attempt::with(['quiz.category'])
@@ -1144,14 +852,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get quiz attempt history with filters.
-     *
-     * @param int $quizId
-     * @param array $filters
-     * @param int $perPage
-     * @return LengthAwarePaginator
-     */
     public function getQuizHistory(int $quizId, array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = Attempt::with(['user'])
@@ -1177,24 +877,11 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->paginate($perPage);
     }
 
-    /**
-     * Get attempts count by date.
-     *
-     * @param string $date
-     * @return int
-     */
     public function getCountByDate(string $date): int
     {
         return Attempt::whereDate('created_at', $date)->count();
     }
 
-    /**
-     * Get attempts count by month.
-     *
-     * @param int $year
-     * @param int $month
-     * @return int
-     */
     public function getCountByMonth(int $year, int $month): int
     {
         return Attempt::whereYear('created_at', $year)
@@ -1202,12 +889,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->count();
     }
 
-    /**
-     * Get average score by date.
-     *
-     * @param string $date
-     * @return float
-     */
     public function getAverageScoreByDate(string $date): float
     {
         return (float) Attempt::whereDate('created_at', $date)
@@ -1215,13 +896,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->avg('percentage_score') ?? 0;
     }
 
-    /**
-     * Get average score by month.
-     *
-     * @param int $year
-     * @param int $month
-     * @return float
-     */
     public function getAverageScoreByMonth(int $year, int $month): float
     {
         return (float) Attempt::whereYear('created_at', $year)
@@ -1230,12 +904,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->avg('percentage_score') ?? 0;
     }
 
-    /**
-     * Get total attempts count.
-     *
-     * @param array $filters
-     * @return int
-     */
     public function getTotalAttemptsCount(array $filters = []): int
     {
         $query = Attempt::query();
@@ -1251,12 +919,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $query->count();
     }
 
-    /**
-     * Get total completed attempts count.
-     *
-     * @param array $filters
-     * @return int
-     */
     public function getTotalCompletedCount(array $filters = []): int
     {
         $query = Attempt::where('status', 'completed');
@@ -1272,34 +934,16 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $query->count();
     }
 
-    /**
-     * Get total in-progress attempts count.
-     *
-     * @param array $filters
-     * @return int
-     */
     public function getTotalInProgressCount(array $filters = []): int
     {
         return Attempt::where('status', 'in_progress')->count();
     }
 
-    /**
-     * Get total timed-out attempts count.
-     *
-     * @param array $filters
-     * @return int
-     */
     public function getTotalTimedOutCount(array $filters = []): int
     {
         return Attempt::where('status', 'timed_out')->count();
     }
 
-    /**
-     * Get overall average score.
-     *
-     * @param array $filters
-     * @return float
-     */
     public function getOverallAverageScore(array $filters = []): float
     {
         $query = Attempt::where('status', 'completed');
@@ -1315,12 +959,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return (float) $query->avg('percentage_score') ?? 0;
     }
 
-    /**
-     * Get overall average time taken.
-     *
-     * @param array $filters
-     * @return float
-     */
     public function getOverallAverageTime(array $filters = []): float
     {
         $query = Attempt::where('status', 'completed');
@@ -1336,12 +974,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return (float) $query->avg('time_taken') ?? 0;
     }
 
-    /**
-     * Get users with most attempts.
-     *
-     * @param int $limit
-     * @return array
-     */
     public function getTopActiveUsers(int $limit = 10): array
     {
         return Attempt::select('user_id', DB::raw('COUNT(*) as attempts_count'))
@@ -1359,12 +991,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get quizzes with most attempts.
-     *
-     * @param int $limit
-     * @return array
-     */
     public function getTopAttemptedQuizzes(int $limit = 10): array
     {
         return Attempt::select('quiz_id', DB::raw('COUNT(*) as attempts_count'))
@@ -1382,13 +1008,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get users with highest average score.
-     *
-     * @param int $limit
-     * @param int $minAttempts
-     * @return array
-     */
     public function getTopPerformingUsers(int $limit = 10, int $minAttempts = 5): array
     {
         return Attempt::select('user_id', 
@@ -1412,13 +1031,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get quizzes with highest average score.
-     *
-     * @param int $limit
-     * @param int $minAttempts
-     * @return array
-     */
     public function getTopPerformingQuizzes(int $limit = 10, int $minAttempts = 5): array
     {
         return Attempt::select('quiz_id', 
@@ -1442,24 +1054,11 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get attempt statistics by user segment.
-     *
-     * @param string $segment
-     * @return array
-     */
     public function getStatsByUserSegment(string $segment): array
     {
-        // Implementation depends on how users are segmented
-        // This is a placeholder
         return [];
     }
 
-    /**
-     * Get attempt statistics by quiz category.
-     *
-     * @return array
-     */
     public function getStatsByCategory(): array
     {
         return Attempt::where('status', 'completed')
@@ -1477,11 +1076,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get attempt statistics by difficulty.
-     *
-     * @return array
-     */
     public function getStatsByDifficulty(): array
     {
         return Attempt::where('status', 'completed')
@@ -1497,12 +1091,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get completion funnel data.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getCompletionFunnel(int $quizId): array
     {
         $totalStarted = Attempt::where('quiz_id', $quizId)->count();
@@ -1524,12 +1112,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get drop-off points (questions where users quit).
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getDropOffPoints(int $quizId): array
     {
         $dropOffs = DB::table('attempt_answers')
@@ -1551,12 +1133,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $dropOffs;
     }
 
-    /**
-     * Get time distribution for quiz completion.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getTimeDistribution(int $quizId): array
     {
         $attempts = Attempt::where('quiz_id', $quizId)
@@ -1590,13 +1166,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get score distribution for quiz.
-     *
-     * @param int $quizId
-     * @param int $buckets
-     * @return array
-     */
     public function getScoreDistribution(int $quizId, int $buckets = 10): array
     {
         $scores = Attempt::where('quiz_id', $quizId)
@@ -1625,15 +1194,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $distribution;
     }
 
-    /**
-     * Get attempts comparison between two periods.
-     *
-     * @param string $startDate1
-     * @param string $endDate1
-     * @param string $startDate2
-     * @param string $endDate2
-     * @return array
-     */
     public function getPeriodComparison(string $startDate1, string $endDate1, string $startDate2, string $endDate2): array
     {
         $period1 = Attempt::whereBetween('created_at', [$startDate1, $endDate1])->count();
@@ -1657,12 +1217,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get year-over-year growth.
-     *
-     * @param int $years
-     * @return array
-     */
     public function getYearOverYearGrowth(int $years = 2): array
     {
         $result = [];
@@ -1681,12 +1235,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get month-over-month growth.
-     *
-     * @param int $months
-     * @return array
-     */
     public function getMonthOverMonthGrowth(int $months = 6): array
     {
         $result = [];
@@ -1706,12 +1254,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $result;
     }
 
-    /**
-     * Get predicted attempts for next period.
-     *
-     * @param int $days
-     * @return array
-     */
     public function getPredictedAttempts(int $days = 30): array
     {
         $historicalData = Attempt::select(
@@ -1730,18 +1272,13 @@ class AttemptRepository implements AttemptRepositoryInterface
         for ($i = 1; $i <= $days; $i++) {
             $predictions[] = [
                 'date' => now()->addDays($i)->format('Y-m-d'),
-                'predicted' => round($avgCount * (1 + (rand(-10, 10) / 100))), // Simple random variation
+                'predicted' => round($avgCount * (1 + (rand(-10, 10) / 100))),
             ];
         }
         
         return $predictions;
     }
 
-    /**
-     * Get seasonal patterns.
-     *
-     * @return array
-     */
     public function getSeasonalPatterns(): array
     {
         $monthlyAverages = Attempt::select(
@@ -1757,12 +1294,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $monthlyAverages;
     }
 
-    /**
-     * Get holiday impact on attempts.
-     *
-     * @param array $holidays
-     * @return array
-     */
     public function getHolidayImpact(array $holidays): array
     {
         $impact = [];
@@ -1786,28 +1317,13 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $impact;
     }
 
-    /**
-     * Get weather impact on attempts (if weather data available).
-     *
-     * @param array $weatherData
-     * @return array
-     */
     public function getWeatherImpact(array $weatherData): array
     {
-        // This would require weather data integration
-        // Placeholder implementation
         return [];
     }
 
-    /**
-     * Get attempt correlation with other factors.
-     *
-     * @param string $factor
-     * @return array
-     */
     public function getCorrelation(string $factor): array
     {
-        // Placeholder for correlation analysis
         return [
             'factor' => $factor,
             'correlation_coefficient' => 0,
@@ -1815,12 +1331,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Export attempts in bulk for data science.
-     *
-     * @param array $options
-     * @return array
-     */
     public function exportForDataScience(array $options = []): array
     {
         $query = Attempt::with(['user', 'quiz', 'answers']);
@@ -1857,13 +1367,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get attempts sample for machine learning.
-     *
-     * @param int $size
-     * @param array $conditions
-     * @return array
-     */
     public function getMLSample(int $size = 1000, array $conditions = []): array
     {
         $query = Attempt::with(['answers'])
@@ -1896,14 +1399,8 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get feature importance for prediction.
-     *
-     * @return array
-     */
     public function getFeatureImportance(): array
     {
-        // Placeholder - would require ML model integration
         return [
             'quiz_difficulty' => 0.35,
             'previous_attempts' => 0.25,
@@ -1914,12 +1411,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get anomaly detection results.
-     *
-     * @param string $method
-     * @return array
-     */
     public function getAnomalies(string $method = 'statistical'): array
     {
         $mean = Attempt::where('status', 'completed')->avg('percentage_score');
@@ -1928,7 +1419,7 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->first()
             ->std ?? 0;
         
-        $threshold = 2; // 2 standard deviations
+        $threshold = 2;
         
         $anomalies = Attempt::with(['user', 'quiz'])
             ->where('status', 'completed')
@@ -1950,11 +1441,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $anomalies;
     }
 
-    /**
-     * Get attempt patterns by user behavior.
-     *
-     * @return array
-     */
     public function getUserBehaviorPatterns(): array
     {
         return [
@@ -1967,13 +1453,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get learning curve data.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return array
-     */
     public function getLearningCurve(int $userId, int $quizId): array
     {
         return Attempt::where('user_id', $userId)
@@ -1991,14 +1470,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->toArray();
     }
 
-    /**
-     * Get forgetting curve data.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @param int $days
-     * @return array
-     */
     public function getForgettingCurve(int $userId, int $quizId, int $days = 30): array
     {
         $attempt = Attempt::where('user_id', $userId)
@@ -2022,13 +1493,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $recallTests;
     }
 
-    /**
-     * Get spaced repetition recommendations.
-     *
-     * @param int $userId
-     * @param int $limit
-     * @return array
-     */
     public function getSpacedRepetitionRecommendations(int $userId, int $limit = 10): array
     {
         $attempts = Attempt::where('user_id', $userId)
@@ -2043,7 +1507,6 @@ class AttemptRepository implements AttemptRepositoryInterface
             $latest = $userAttempts->first();
             $daysSince = now()->diffInDays($latest->completed_at);
             
-            // Ebbinghaus forgetting curve intervals
             if ($daysSince >= 1 && $daysSince <= 2) {
                 $recommendations[] = [
                     'quiz_id' => $quizId,
@@ -2071,13 +1534,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return array_slice($recommendations, 0, $limit);
     }
 
-    /**
-     * Get mastery level for user on quiz.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return float
-     */
     public function getMasteryLevel(int $userId, int $quizId): float
     {
         $attempts = Attempt::where('user_id', $userId)
@@ -2094,19 +1550,11 @@ class AttemptRepository implements AttemptRepositoryInterface
         $averageScore = $attempts->avg('percentage_score');
         $attemptCount = $attempts->count();
         
-        // Weighted formula: 40% latest score, 40% average, 20% attempt count factor
         $mastery = ($latestScore * 0.4) + ($averageScore * 0.4) + (min($attemptCount, 10) * 2);
         
         return min(100, round($mastery, 2));
     }
 
-    /**
-     * Get knowledge retention rate.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return float
-     */
     public function getRetentionRate(int $userId, int $quizId): float
     {
         $attempts = Attempt::where('user_id', $userId)
@@ -2116,24 +1564,17 @@ class AttemptRepository implements AttemptRepositoryInterface
             ->get();
         
         if ($attempts->count() < 2) {
-            return 100; // Not enough data
+            return 100;
         }
         
         $firstScore = $attempts->first()->percentage_score;
         $lastScore = $attempts->last()->percentage_score;
         
-        // Calculate retention based on score maintenance
         $retention = ($lastScore / max($firstScore, 1)) * 100;
         
         return min(100, round($retention, 2));
     }
 
-    /**
-     * Get confusion matrix for answers.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getConfusionMatrix(int $quizId): array
     {
         $matrix = [];
@@ -2168,12 +1609,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $matrix;
     }
 
-    /**
-     * Get question difficulty progression.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getQuestionDifficultyProgression(int $quizId): array
     {
         $questions = DB::table('questions')
@@ -2203,12 +1638,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $progression;
     }
 
-    /**
-     * Get optimal question order based on performance.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getOptimalQuestionOrder(int $quizId): array
     {
         $questions = DB::table('questions')
@@ -2242,19 +1671,11 @@ class AttemptRepository implements AttemptRepositoryInterface
             ];
         }
         
-        // Sort by accuracy (easier questions first)
         usort($performance, fn($a, $b) => $b['accuracy'] <=> $a['accuracy']);
         
         return $performance;
     }
 
-    /**
-     * Get personalized difficulty adjustment.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return array
-     */
     public function getPersonalizedDifficulty(int $userId, int $quizId): array
     {
         $userAvg = Attempt::where('user_id', $userId)
@@ -2282,13 +1703,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get adaptive testing parameters.
-     *
-     * @param int $userId
-     * @param int $quizId
-     * @return array
-     */
     public function getAdaptiveTestingParams(int $userId, int $quizId): array
     {
         $previousAttempts = Attempt::where('user_id', $userId)
@@ -2328,12 +1742,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get item response theory parameters.
-     *
-     * @param int $questionId
-     * @return array
-     */
     public function getIRTParameters(int $questionId): array
     {
         $answers = DB::table('attempt_answers')
@@ -2352,13 +1760,12 @@ class AttemptRepository implements AttemptRepositoryInterface
             ];
         }
         
-        // Simple estimation (in practice, use IRT software)
         $correct = $answers->where('is_correct', true)->count();
         $total = $answers->count();
         
         $difficulty = -log((1 / ($correct / max($total, 1))) - 1);
         $discrimination = 1;
-        $guessing = 1 / 4; // For 4-option multiple choice
+        $guessing = 1 / 4;
         
         return [
             'difficulty' => round($difficulty, 2),
@@ -2367,12 +1774,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get question discrimination index.
-     *
-     * @param int $questionId
-     * @return float
-     */
     public function getDiscriminationIndex(int $questionId): float
     {
         $scores = DB::table('attempt_answers')
@@ -2401,12 +1802,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($discrimination, 2);
     }
 
-    /**
-     * Get question difficulty index.
-     *
-     * @param int $questionId
-     * @return float
-     */
     public function getDifficultyIndex(int $questionId): float
     {
         $correct = DB::table('attempt_answers')
@@ -2425,12 +1820,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($correct / $total) * 100, 2);
     }
 
-    /**
-     * Get question guessing parameter.
-     *
-     * @param int $questionId
-     * @return float
-     */
     public function getGuessingParameter(int $questionId): float
     {
         $question = \App\Models\Question::find($questionId);
@@ -2444,12 +1833,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return 1 / max($optionsCount, 1);
     }
 
-    /**
-     * Get test information function.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getTestInformationFunction(int $quizId): array
     {
         $questions = \App\Models\Question::where('quiz_id', $quizId)->get();
@@ -2474,12 +1857,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $information;
     }
 
-    /**
-     * Get standard error of measurement.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getStandardErrorOfMeasurement(int $quizId): float
     {
         $reliability = $this->getReliabilityCoefficient($quizId);
@@ -2492,12 +1869,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $stdDev * sqrt(1 - $reliability);
     }
 
-    /**
-     * Get reliability coefficient (Cronbach's alpha).
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getReliabilityCoefficient(int $quizId): float
     {
         $attempts = Attempt::with('answers')
@@ -2531,12 +1902,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(max(0, min(1, $alpha)), 2);
     }
 
-    /**
-     * Get item-total correlation.
-     *
-     * @param int $questionId
-     * @return float
-     */
     public function getItemTotalCorrelation(int $questionId): float
     {
         $answers = DB::table('attempt_answers')
@@ -2568,25 +1933,12 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($this->correlation($correctness, $scores), 2);
     }
 
-    /**
-     * Get KR-20 reliability.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getKR20Reliability(int $quizId): float
     {
-        // Kuder-Richardson Formula 20 (for dichotomous items)
         return $this->getReliabilityCoefficient($quizId);
     }
 
-    /**
-     * Get test-retest reliability.
-     *
-     * @param int $quizId
-     * @param int $days
-     * @return float
-     */
+
     public function getTestRetestReliability(int $quizId, int $days = 30): float
     {
         $users = Attempt::where('quiz_id', $quizId)
@@ -2624,12 +1976,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($this->correlation($firstScores, $secondScores), 2);
     }
 
-    /**
-     * Get split-half reliability.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getSplitHalfReliability(int $quizId): float
     {
         $questions = \App\Models\Question::where('quiz_id', $quizId)
@@ -2658,19 +2004,11 @@ class AttemptRepository implements AttemptRepositoryInterface
         
         $correlation = $this->correlation($scores1, $scores2);
         
-        // Spearman-Brown prophecy formula
         $reliability = (2 * $correlation) / (1 + $correlation);
         
         return round($reliability, 2);
     }
 
-    /**
-     * Get parallel forms reliability.
-     *
-     * @param int $quizId1
-     * @param int $quizId2
-     * @return float
-     */
     public function getParallelFormsReliability(int $quizId1, int $quizId2): float
     {
         $users1 = Attempt::where('quiz_id', $quizId1)
@@ -2712,37 +2050,16 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($this->correlation($scores1, $scores2), 2);
     }
 
-    /**
-     * Get inter-rater reliability (for essay questions).
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getInterRaterReliability(int $quizId): float
     {
-        // Placeholder for essay question grading reliability
         return 0.95;
     }
 
-    /**
-     * Get validity coefficient.
-     *
-     * @param int $quizId
-     * @param string $criterion
-     * @return float
-     */
     public function getValidityCoefficient(int $quizId, string $criterion): float
     {
-        // Placeholder - would require external criterion measure
         return 0.7;
     }
 
-    /**
-     * Get content validity index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getContentValidityIndex(int $quizId): float
     {
         $quiz = \App\Models\Quiz::with('questions')->find($quizId);
@@ -2751,18 +2068,12 @@ class AttemptRepository implements AttemptRepositoryInterface
             return 0;
         }
         
-        $experts = 5; // Number of expert reviews
-        $relevantCount = 4; // Number of experts rating as relevant
+        $experts = 5;
+        $relevantCount = 4;
         
         return round($relevantCount / $experts, 2);
     }
 
-    /**
-     * Get construct validity.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getConstructValidity(int $quizId): array
     {
         return [
@@ -2772,61 +2083,26 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get criterion-related validity.
-     *
-     * @param int $quizId
-     * @param string $criterion
-     * @return float
-     */
     public function getCriterionValidity(int $quizId, string $criterion): float
     {
         return $this->getValidityCoefficient($quizId, $criterion);
     }
 
-    /**
-     * Get concurrent validity.
-     *
-     * @param int $quizId
-     * @param int $otherQuizId
-     * @return float
-     */
     public function getConcurrentValidity(int $quizId, int $otherQuizId): float
     {
         return $this->getParallelFormsReliability($quizId, $otherQuizId);
     }
 
-    /**
-     * Get predictive validity.
-     *
-     * @param int $quizId
-     * @param string $outcome
-     * @return float
-     */
     public function getPredictiveValidity(int $quizId, string $outcome): float
     {
-        // Placeholder - would require outcome data
         return 0.65;
     }
 
-    /**
-     * Get face validity.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getFaceValidity(int $quizId): float
     {
-        // Placeholder - user satisfaction survey
         return 0.85;
     }
 
-    /**
-     * Get factorial validity.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getFactorialValidity(int $quizId): array
     {
         return [
@@ -2836,13 +2112,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get differential item functioning.
-     *
-     * @param int $questionId
-     * @param string $group
-     * @return array
-     */
     public function getDifferentialItemFunctioning(int $questionId, string $group): array
     {
         return [
@@ -2854,25 +2123,11 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get item bias.
-     *
-     * @param int $questionId
-     * @param string $group
-     * @return float
-     */
     public function getItemBias(int $questionId, string $group): float
     {
         return 0.15;
     }
 
-    /**
-     * Get test fairness.
-     *
-     * @param int $quizId
-     * @param string $group
-     * @return array
-     */
     public function getTestFairness(int $quizId, string $group): array
     {
         return [
@@ -2882,13 +2137,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get measurement invariance.
-     *
-     * @param int $quizId
-     * @param string $group
-     * @return array
-     */
     public function getMeasurementInvariance(int $quizId, string $group): array
     {
         return [
@@ -2899,13 +2147,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get differential test functioning.
-     *
-     * @param int $quizId
-     * @param string $group
-     * @return array
-     */
     public function getDifferentialTestFunctioning(int $quizId, string $group): array
     {
         return [
@@ -2915,13 +2156,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get impact assessment.
-     *
-     * @param int $quizId
-     * @param string $group
-     * @return array
-     */
     public function getImpactAssessment(int $quizId, string $group): array
     {
         return [
@@ -2931,37 +2165,17 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get adverse impact ratio.
-     *
-     * @param int $quizId
-     * @param string $group
-     * @return float
-     */
     public function getAdverseImpactRatio(int $quizId, string $group): float
     {
         return 0.92;
     }
 
-    /**
-     * Get four-fifths rule compliance.
-     *
-     * @param int $quizId
-     * @param string $group
-     * @return bool
-     */
     public function getFourFifthsRuleCompliance(int $quizId, string $group): bool
     {
         $ratio = $this->getAdverseImpactRatio($quizId, $group);
         return $ratio >= 0.8;
     }
 
-    /**
-     * Get test utility analysis.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getTestUtilityAnalysis(int $quizId): array
     {
         return [
@@ -2972,23 +2186,11 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get return on investment.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getReturnOnInvestment(int $quizId): float
     {
         return 2.5;
     }
 
-    /**
-     * Get cost-benefit analysis.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getCostBenefitAnalysis(int $quizId): array
     {
         return [
@@ -2999,12 +2201,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get efficiency index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getEfficiencyIndex(int $quizId): float
     {
         $avgTime = $this->getAverageCompletionTime($quizId);
@@ -3013,12 +2209,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($maxTime - $avgTime) / $maxTime * 100, 2);
     }
 
-    /**
-     * Get effectiveness index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getEffectivenessIndex(int $quizId): float
     {
         $avgScore = $this->getOverallAverageScore(['quiz_id' => $quizId]);
@@ -3027,12 +2217,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($avgScore + $passRate) / 2, 2);
     }
 
-    /**
-     * Get productivity index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getProductivityIndex(int $quizId): float
     {
         $attempts = Attempt::where('quiz_id', $quizId)->count();
@@ -3041,12 +2225,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $attempts > 0 ? round(($completed / $attempts) * 100, 2) : 0;
     }
 
-    /**
-     * Get quality index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getQualityIndex(int $quizId): float
     {
         $reliability = $this->getReliabilityCoefficient($quizId);
@@ -3055,12 +2233,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($reliability + $validity) * 50, 2);
     }
 
-    /**
-     * Get satisfaction index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getSatisfactionIndex(int $quizId): float
     {
         $avgRating = DB::table('quiz_reviews')
@@ -3070,12 +2242,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($avgRating * 20, 2);
     }
 
-    /**
-     * Get engagement index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getEngagementIndex(int $quizId): float
     {
         $attempts = Attempt::where('quiz_id', $quizId)->count();
@@ -3084,12 +2250,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $uniqueUsers > 0 ? round($attempts / $uniqueUsers * 10, 2) : 0;
     }
 
-    /**
-     * Get retention index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getRetentionIndex(int $quizId): float
     {
         $returning = Attempt::where('quiz_id', $quizId)
@@ -3102,34 +2262,16 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $total > 0 ? round(($returning / $total) * 100, 2) : 0;
     }
 
-    /**
-     * Get completion index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getCompletionIndex(int $quizId): float
     {
         return $this->getCompletionRate($quizId);
     }
 
-    /**
-     * Get success index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getSuccessIndex(int $quizId): float
     {
         return $this->getPassRate($quizId);
     }
 
-    /**
-     * Get performance index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getPerformanceIndex(int $quizId): float
     {
         $avgScore = $this->getOverallAverageScore(['quiz_id' => $quizId]);
@@ -3139,12 +2281,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($avgScore + $completion + $efficiency) / 3, 2);
     }
 
-    /**
-     * Get mastery index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getMasteryIndex(int $quizId): float
     {
         $avgMastery = Attempt::where('quiz_id', $quizId)
@@ -3156,12 +2292,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($avgMastery ?? 0, 2);
     }
 
-    /**
-     * Get learning index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getLearningIndex(int $quizId): float
     {
         $improvement = $this->getRetryImprovementRate($quizId);
@@ -3170,12 +2300,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($improvement + $retention) / 2, 2);
     }
 
-    /**
-     * Get growth index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getGrowthIndex(int $quizId): float
     {
         $monthlyGrowth = $this->getMonthOverMonthGrowth(3);
@@ -3190,23 +2314,11 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $previous > 0 ? round((($latest - $previous) / $previous) * 100, 2) : 0;
     }
 
-    /**
-     * Get improvement index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getImprovementIndex(int $quizId): float
     {
         return $this->getRetryImprovementRate($quizId);
     }
 
-    /**
-     * Get progress index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getProgressIndex(int $quizId): float
     {
         $users = Attempt::where('quiz_id', $quizId)
@@ -3237,12 +2349,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($progress ?? 0, 2);
     }
 
-    /**
-     * Get achievement index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getAchievementIndex(int $quizId): float
     {
         $perfectScores = Attempt::where('quiz_id', $quizId)
@@ -3257,12 +2363,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $total > 0 ? round(($perfectScores / $total) * 100, 2) : 0;
     }
 
-    /**
-     * Get recognition index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getRecognitionIndex(int $quizId): float
     {
         $shares = DB::table('quiz_shares')
@@ -3274,12 +2374,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $attempts > 0 ? round(($shares / $attempts) * 100, 2) : 0;
     }
 
-    /**
-     * Get reward index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getRewardIndex(int $quizId): float
     {
         $badgesEarned = DB::table('user_achievements')
@@ -3291,12 +2385,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $attempts > 0 ? round(($badgesEarned / $attempts) * 100, 2) : 0;
     }
 
-    /**
-     * Get motivation index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getMotivationIndex(int $quizId): float
     {
         $retryRate = $this->getRetentionIndex($quizId);
@@ -3305,12 +2393,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round(($retryRate + $completionRate) / 2, 2);
     }
 
-    /**
-     * Get confidence index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getConfidenceIndex(int $quizId): float
     {
         $avgScore = $this->getOverallAverageScore(['quiz_id' => $quizId]);
@@ -3318,12 +2400,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($avgScore, 2);
     }
 
-    /**
-     * Get self-efficacy index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getSelfEfficacyIndex(int $quizId): float
     {
         $challengeSeeking = Attempt::where('quiz_id', $quizId)
@@ -3339,12 +2415,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $total > 0 ? round(($challengeSeeking / $total) * 100, 2) : 0;
     }
 
-    /**
-     * Get anxiety index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getAnxietyIndex(int $quizId): float
     {
         $incomplete = Attempt::where('quiz_id', $quizId)
@@ -3356,12 +2426,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $total > 0 ? round(($incomplete / $total) * 100, 2) : 0;
     }
 
-    /**
-     * Get stress index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getStressIndex(int $quizId): float
     {
         $avgTime = $this->getAverageCompletionTime($quizId);
@@ -3370,12 +2434,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $timeLimit > 0 ? round(($avgTime / $timeLimit) * 100, 2) : 0;
     }
 
-    /**
-     * Get fatigue index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getFatigueIndex(int $quizId): float
     {
         $dropoff = DB::table('attempt_answers')
@@ -3397,12 +2455,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $firstQuestions > 0 ? round(($lastQuestions / $firstQuestions) * 100, 2) : 0;
     }
 
-    /**
-     * Get boredom index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getBoredomIndex(int $quizId): float
     {
         $fastCompletions = Attempt::where('quiz_id', $quizId)
@@ -3417,12 +2469,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $total > 0 ? round(($fastCompletions / $total) * 100, 2) : 0;
     }
 
-    /**
-     * Get frustration index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getFrustrationIndex(int $quizId): float
     {
         $abandoned = Attempt::where('quiz_id', $quizId)
@@ -3435,12 +2481,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $total > 0 ? round(($abandoned / $total) * 100, 2) : 0;
     }
 
-    /**
-     * Get confusion index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getConfusionIndex(int $quizId): float
     {
         $answers = DB::table('attempt_answers')
@@ -3456,12 +2496,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $totalAnswered > 0 ? round(($incorrectChoices / $totalAnswered) * 100, 2) : 0;
     }
 
-    /**
-     * Get curiosity index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getCuriosityIndex(int $quizId): float
     {
         $uniqueVisitors = Attempt::where('quiz_id', $quizId)
@@ -3474,12 +2508,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $categoryQuizzes > 0 ? round(($uniqueVisitors / $categoryQuizzes) * 100, 2) : 0;
     }
 
-    /**
-     * Get interest index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getInterestIndex(int $quizId): float
     {
         $returns = Attempt::where('quiz_id', $quizId)
@@ -3494,12 +2522,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $total > 0 ? round(($returns / $total) * 100, 2) : 0;
     }
 
-    /**
-     * Get relevance index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getRelevanceIndex(int $quizId): float
     {
         $avgScore = $this->getOverallAverageScore(['quiz_id' => $quizId]);
@@ -3507,12 +2529,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($avgScore, 2);
     }
 
-    /**
-     * Get usefulness index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getUsefulnessIndex(int $quizId): float
     {
         $avgRating = DB::table('quiz_reviews')
@@ -3522,12 +2538,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($avgRating * 20, 2);
     }
 
-    /**
-     * Get applicability index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getApplicabilityIndex(int $quizId): float
     {
         $avgScore = $this->getOverallAverageScore(['quiz_id' => $quizId]);
@@ -3535,12 +2545,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return round($avgScore, 2);
     }
 
-    /**
-     * Get transfer index.
-     *
-     * @param int $quizId
-     * @return float
-     */
     public function getTransferIndex(int $quizId): float
     {
         $users = Attempt::where('quiz_id', $quizId)
@@ -3561,13 +2565,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $totalUsers > 0 ? round(($attemptedRelated / $totalUsers) * 100, 2) : 0;
     }
 
-    /**
-     * Get retention curve.
-     *
-     * @param int $quizId
-     * @param int $days
-     * @return array
-     */
     public function getRetentionCurve(int $quizId, int $days = 30): array
     {
         $attempts = Attempt::where('quiz_id', $quizId)
@@ -3615,12 +2612,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $curve;
     }
 
-    /**
-     * Get power law of learning.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getPowerLawOfLearning(int $quizId): array
     {
         $attempts = Attempt::where('quiz_id', $quizId)
@@ -3646,23 +2637,11 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $learningCurves;
     }
 
-    /**
-     * Get Ebbinghaus forgetting curve.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getEbbinghausForgettingCurve(int $quizId): array
     {
         return $this->getForgettingCurve(0, $quizId, 30);
     }
 
-    /**
-     * Get spaced repetition effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getSpacedRepetitionEffect(int $quizId): array
     {
         $attempts = Attempt::where('quiz_id', $quizId)
@@ -3697,12 +2676,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         return $effects;
     }
 
-    /**
-     * Get testing effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getTestingEffect(int $quizId): array
     {
         return [
@@ -3711,12 +2684,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get retrieval practice effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getRetrievalPracticeEffect(int $quizId): array
     {
         return [
@@ -3725,12 +2692,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get generation effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getGenerationEffect(int $quizId): array
     {
         return [
@@ -3739,12 +2700,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get elaboration effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getElaborationEffect(int $quizId): array
     {
         return [
@@ -3753,12 +2708,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get organization effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getOrganizationEffect(int $quizId): array
     {
         return [
@@ -3767,12 +2716,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get visualization effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getVisualizationEffect(int $quizId): array
     {
         return [
@@ -3781,12 +2724,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get dual coding effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getDualCodingEffect(int $quizId): array
     {
         return [
@@ -3795,12 +2732,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get multimedia effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getMultimediaEffect(int $quizId): array
     {
         return [
@@ -3809,12 +2740,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get modality effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getModalityEffect(int $quizId): array
     {
         return [
@@ -3823,12 +2748,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get redundancy effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getRedundancyEffect(int $quizId): array
     {
         return [
@@ -3837,12 +2756,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get coherence effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getCoherenceEffect(int $quizId): array
     {
         return [
@@ -3851,12 +2764,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get personalization effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getPersonalizationEffect(int $quizId): array
     {
         return [
@@ -3865,12 +2772,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get embodiment effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getEmbodimentEffect(int $quizId): array
     {
         return [
@@ -3879,12 +2780,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get emotional design effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getEmotionalDesignEffect(int $quizId): array
     {
         return [
@@ -3893,12 +2788,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get seductive details effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getSeductiveDetailsEffect(int $quizId): array
     {
         return [
@@ -3907,12 +2796,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get signaling effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getSignalingEffect(int $quizId): array
     {
         return [
@@ -3921,12 +2804,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get cueing effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getCueingEffect(int $quizId): array
     {
         return [
@@ -3935,12 +2812,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get feedback effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getFeedbackEffect(int $quizId): array
     {
         return [
@@ -3949,12 +2820,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get scaffolding effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getScaffoldingEffect(int $quizId): array
     {
         return [
@@ -3963,12 +2828,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get fading effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getFadingEffect(int $quizId): array
     {
         return [
@@ -3977,12 +2836,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get worked example effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getWorkedExampleEffect(int $quizId): array
     {
         return [
@@ -3991,12 +2844,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get completion effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getCompletionEffect(int $quizId): array
     {
         return [
@@ -4005,12 +2852,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get imagination effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getImaginationEffect(int $quizId): array
     {
         return [
@@ -4019,12 +2860,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get self-explanation effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getSelfExplanationEffect(int $quizId): array
     {
         return [
@@ -4033,12 +2868,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get reflection effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getReflectionEffect(int $quizId): array
     {
         return [
@@ -4047,12 +2876,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get metacognition effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getMetacognitionEffect(int $quizId): array
     {
         return [
@@ -4061,12 +2884,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get self-regulation effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getSelfRegulationEffect(int $quizId): array
     {
         return [
@@ -4075,12 +2892,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get motivation effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getMotivationEffect(int $quizId): array
     {
         return [
@@ -4089,12 +2900,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get engagement effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getEngagementEffect(int $quizId): array
     {
         return [
@@ -4103,12 +2908,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get persistence effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getPersistenceEffect(int $quizId): array
     {
         return [
@@ -4117,12 +2916,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get grit effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getGritEffect(int $quizId): array
     {
         return [
@@ -4131,12 +2924,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get mindset effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getMindsetEffect(int $quizId): array
     {
         return [
@@ -4145,12 +2932,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get attribution effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getAttributionEffect(int $quizId): array
     {
         return [
@@ -4159,12 +2940,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get self-efficacy effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getSelfEfficacyEffect(int $quizId): array
     {
         return [
@@ -4173,12 +2948,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get confidence effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getConfidenceEffect(int $quizId): array
     {
         return [
@@ -4187,12 +2956,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get anxiety effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getAnxietyEffect(int $quizId): array
     {
         return [
@@ -4201,12 +2964,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get stress effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getStressEffect(int $quizId): array
     {
         return [
@@ -4215,12 +2972,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get fatigue effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getFatigueEffect(int $quizId): array
     {
         return [
@@ -4229,12 +2980,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get boredom effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getBoredomEffect(int $quizId): array
     {
         return [
@@ -4243,12 +2988,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get frustration effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getFrustrationEffect(int $quizId): array
     {
         return [
@@ -4257,12 +2996,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get confusion effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getConfusionEffect(int $quizId): array
     {
         return [
@@ -4271,12 +3004,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get curiosity effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getCuriosityEffect(int $quizId): array
     {
         return [
@@ -4285,12 +3012,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get interest effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getInterestEffect(int $quizId): array
     {
         return [
@@ -4299,12 +3020,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get relevance effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getRelevanceEffect(int $quizId): array
     {
         return [
@@ -4313,12 +3028,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get usefulness effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getUsefulnessEffect(int $quizId): array
     {
         return [
@@ -4327,12 +3036,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get applicability effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getApplicabilityEffect(int $quizId): array
     {
         return [
@@ -4341,12 +3044,6 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Get transfer effect.
-     *
-     * @param int $quizId
-     * @return array
-     */
     public function getTransferEffect(int $quizId): array
     {
         return [
@@ -4355,12 +3052,7 @@ class AttemptRepository implements AttemptRepositoryInterface
         ];
     }
 
-    /**
-     * Calculate median of an array.
-     *
-     * @param array $values
-     * @return float
-     */
+
     private function calculateMedian(array $values): float
     {
         sort($values);
@@ -4374,13 +3066,7 @@ class AttemptRepository implements AttemptRepositoryInterface
         return ($values[$middle - 1] + $values[$middle]) / 2;
     }
 
-    /**
-     * Calculate correlation between two arrays.
-     *
-     * @param array $x
-     * @param array $y
-     * @return float
-     */
+
     private function correlation(array $x, array $y): float
     {
         $n = count($x);

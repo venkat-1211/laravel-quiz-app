@@ -5,7 +5,7 @@ namespace App\Http\Requests\Quiz;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreQuizRequest extends FormRequest
+class UpdateQuizRequest extends FormRequest
 {
     public function authorize(): bool
     {

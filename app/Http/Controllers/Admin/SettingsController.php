@@ -34,7 +34,6 @@ class SettingsController extends Controller
             'app_name' => 'required|string|max:255',
         ]);
 
-        // Update .env file
         $this->updateEnvironmentFile([
             'APP_NAME' => '"' . $request->app_name . '"',
         ]);

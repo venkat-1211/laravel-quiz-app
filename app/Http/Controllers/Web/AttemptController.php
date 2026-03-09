@@ -104,7 +104,6 @@ class AttemptController extends Controller
         try {
             $attempt = $this->attemptService->getAttemptResults($attemptId);
             
-            // Ensure the attempt belongs to the authenticated user
             if ($attempt->user_id !== Auth::id()) {
                 abort(403, 'Unauthorized access.');
             }

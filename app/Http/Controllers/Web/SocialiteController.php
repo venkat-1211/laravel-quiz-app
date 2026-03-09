@@ -12,12 +12,8 @@ use Exception;
 
 class SocialiteController extends Controller
 {
-    /**
-     * Redirect the user to the provider authentication page.
-     */
     public function redirect($provider)
     {
-        // Validate provider
         if (!in_array($provider, ['google', 'facebook'])) {
             return redirect()->route('login')->with('error', 'Invalid provider');
         }
@@ -25,19 +21,14 @@ class SocialiteController extends Controller
         return Socialite::driver($provider)->redirect();
     }
 
-    /**
-     * Handle the callback from the provider.
-     */
     public function callback($provider)
     {
         try {
             $socialUser = Socialite::driver($provider)->user();
             
-            // Check if user exists with this email
             $user = User::where('email', $socialUser->getEmail())->first();
             
             if (!$user) {
-                // Create new user
                 $user = User::create([
                     'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? $provider . '_user',
                     'email' => $socialUser->getEmail(),
@@ -49,10 +40,8 @@ class SocialiteController extends Controller
                     'is_active' => true,
                 ]);
                 
-                // Assign default role
                 $user->addRole('user');
                 
-                // Create leaderboard entry
                 \App\Models\Leaderboard::create([
                     'user_id' => $user->id,
                     'total_points' => 0,
@@ -64,7 +53,6 @@ class SocialiteController extends Controller
                     'monthly_rank' => 0,
                 ]);
             } else {
-                // Update existing user with social info if not already set
                 if (!$user->social_id) {
                     $user->update([
                         'social_id' => $socialUser->getId(),
@@ -74,10 +62,8 @@ class SocialiteController extends Controller
                 }
             }
             
-            // Log the user in
             Auth::login($user, true);
             
-            // Update last login info
             $user->updateLastLogin();
             
             return redirect()->intended('/dashboard')

@@ -47,10 +47,8 @@ class Leaderboard extends Model
 
     public function updateRank()
     {
-        // Update global rank
         $this->rank = Leaderboard::where('total_points', '>', $this->total_points)->count() + 1;
         
-        // Update weekly rank
         $startOfWeek = now()->startOfWeek();
         $endOfWeek = now()->endOfWeek();
         

@@ -14,7 +14,7 @@ class BulkUploadQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'], // 10MB max
+            'file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'],
         ];
     }
 

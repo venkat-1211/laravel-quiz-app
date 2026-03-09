@@ -31,12 +31,6 @@ if (!function_exists('formatTime')) {
 }
 
 if (!function_exists('getDifficultyBadge')) {
-    /**
-     * Get Bootstrap badge class based on difficulty level
-     *
-     * @param string $difficulty
-     * @return string
-     */
     function getDifficultyBadge(string $difficulty): string
     {
         $badges = [
@@ -54,12 +48,6 @@ if (!function_exists('getDifficultyBadge')) {
 }
 
 if (!function_exists('getDifficultyText')) {
-    /**
-     * Get human-readable difficulty text
-     *
-     * @param string $difficulty
-     * @return string
-     */
     function getDifficultyText(string $difficulty): string
     {
         $texts = [
@@ -77,12 +65,6 @@ if (!function_exists('getDifficultyText')) {
 }
 
 if (!function_exists('getInitials')) {
-    /**
-     * Get initials from a name
-     *
-     * @param string $name
-     * @return string
-     */
     function getInitials(string $name): string
     {
         $words = explode(' ', $name);
@@ -99,14 +81,6 @@ if (!function_exists('getInitials')) {
 }
 
 if (!function_exists('truncateText')) {
-    /**
-     * Truncate text to a specified length
-     *
-     * @param string $text
-     * @param int $length
-     * @param string $suffix
-     * @return string
-     */
     function truncateText(string $text, int $length = 100, string $suffix = '...'): string
     {
         if (strlen($text) <= $length) {
@@ -118,14 +92,6 @@ if (!function_exists('truncateText')) {
 }
 
 if (!function_exists('calculatePercentage')) {
-    /**
-     * Calculate percentage
-     *
-     * @param int $value
-     * @param int $total
-     * @param int $decimals
-     * @return float
-     */
     function calculatePercentage(int $value, int $total, int $decimals = 2): float
     {
         if ($total === 0) {
@@ -137,12 +103,6 @@ if (!function_exists('calculatePercentage')) {
 }
 
 if (!function_exists('getScoreColor')) {
-    /**
-     * Get color class based on score percentage
-     *
-     * @param float $score
-     * @return string
-     */
     function getScoreColor(float $score): string
     {
         if ($score >= 80) {
@@ -158,12 +118,6 @@ if (!function_exists('getScoreColor')) {
 }
 
 if (!function_exists('getScoreBadge')) {
-    /**
-     * Get badge class based on score percentage
-     *
-     * @param float $score
-     * @return string
-     */
     function getScoreBadge(float $score): string
     {
         if ($score >= 80) {
@@ -179,12 +133,6 @@ if (!function_exists('getScoreBadge')) {
 }
 
 if (!function_exists('getRandomColor')) {
-    /**
-     * Generate random color for charts
-     *
-     * @param int $index
-     * @return string
-     */
     function getRandomColor(int $index = 0): string
     {
         $colors = [
@@ -198,12 +146,6 @@ if (!function_exists('getRandomColor')) {
 }
 
 if (!function_exists('getTimeAgo')) {
-    /**
-     * Get human-readable time ago
-     *
-     * @param $datetime
-     * @return string
-     */
     function getTimeAgo($datetime): string
     {
         if (!$datetime) {
@@ -216,12 +158,6 @@ if (!function_exists('getTimeAgo')) {
 }
 
 if (!function_exists('getOrdinalSuffix')) {
-    /**
-     * Get ordinal suffix for numbers (1st, 2nd, 3rd, etc.)
-     *
-     * @param int $number
-     * @return string
-     */
     function getOrdinalSuffix(int $number): string
     {
         if (!in_array(($number % 100), [11, 12, 13])) {
@@ -239,13 +175,6 @@ if (!function_exists('getOrdinalSuffix')) {
 }
 
 if (!function_exists('getFileSize')) {
-    /**
-     * Get human-readable file size
-     *
-     * @param int $bytes
-     * @param int $precision
-     * @return string
-     */
     function getFileSize(int $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -261,12 +190,6 @@ if (!function_exists('getFileSize')) {
 }
 
 if (!function_exists('getTimeRemaining')) {
-    /**
-     * Get formatted time remaining
-     *
-     * @param int $seconds
-     * @return string
-     */
     function getTimeRemaining(int $seconds): string
     {
         if ($seconds < 60) {
@@ -284,12 +207,6 @@ if (!function_exists('getTimeRemaining')) {
 }
 
 if (!function_exists('getProgressColor')) {
-    /**
-     * Get progress bar color based on percentage
-     *
-     * @param float $percentage
-     * @return string
-     */
     function getProgressColor(float $percentage): string
     {
         if ($percentage >= 80) {
@@ -305,12 +222,6 @@ if (!function_exists('getProgressColor')) {
 }
 
 if (!function_exists('getDeviceType')) {
-    /**
-     * Detect device type from user agent
-     *
-     * @param string|null $userAgent
-     * @return string
-     */
     function getDeviceType(?string $userAgent): string
     {
         if (!$userAgent) {
@@ -330,12 +241,6 @@ if (!function_exists('getDeviceType')) {
 }
 
 if (!function_exists('getBrowser')) {
-    /**
-     * Get browser name from user agent
-     *
-     * @param string|null $userAgent
-     * @return string
-     */
     function getBrowser(?string $userAgent): string
     {
         if (!$userAgent) {
@@ -359,12 +264,6 @@ if (!function_exists('getBrowser')) {
 }
 
 if (!function_exists('generateSlug')) {
-    /**
-     * Generate URL-friendly slug
-     *
-     * @param string $text
-     * @return string
-     */
     function generateSlug(string $text): string
     {
         return \Illuminate\Support\Str::slug($text);
@@ -372,13 +271,6 @@ if (!function_exists('generateSlug')) {
 }
 
 if (!function_exists('getReadingTime')) {
-    /**
-     * Estimate reading time for text
-     *
-     * @param string $text
-     * @param int $wordsPerMinute
-     * @return int
-     */
     function getReadingTime(string $text, int $wordsPerMinute = 200): int
     {
         $wordCount = str_word_count(strip_tags($text));
@@ -387,13 +279,6 @@ if (!function_exists('getReadingTime')) {
 }
 
 if (!function_exists('getSimilarity')) {
-    /**
-     * Calculate similarity between two strings
-     *
-     * @param string $str1
-     * @param string $str2
-     * @return float
-     */
     function getSimilarity(string $str1, string $str2): float
     {
         similar_text($str1, $str2, $percent);
@@ -402,14 +287,6 @@ if (!function_exists('getSimilarity')) {
 }
 
 if (!function_exists('generateRandomCode')) {
-    /**
-     * Generate random code
-     *
-     * @param int $length
-     * @param bool $letters
-     * @param bool $numbers
-     * @return string
-     */
     function generateRandomCode(int $length = 6, bool $letters = true, bool $numbers = true): string
     {
         $characters = '';
@@ -434,12 +311,6 @@ if (!function_exists('generateRandomCode')) {
 }
 
 if (!function_exists('maskEmail')) {
-    /**
-     * Mask email address for privacy
-     *
-     * @param string $email
-     * @return string
-     */
     function maskEmail(string $email): string
     {
         $parts = explode('@', $email);

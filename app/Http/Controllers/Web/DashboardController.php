@@ -20,22 +20,17 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Get user statistics
         $totalAttempts = $user->attempts()->count();
         $completedQuizzes = $user->attempts()->where('status', 'completed')->count();
         $averageScore = $user->average_score;
         $totalPoints = $user->total_points;
         
-        // Get recent attempts
         $recentAttempts = $this->attemptService->getUserAttempts($user->id, 5);
         
-        // Get available quizzes
         $availableQuizzes = $this->quizService->getPublishedQuizzes([], 6);
         
-        // Get leaderboard preview
         $leaderboard = $this->leaderboardService->getGlobalLeaderboard(10);
         
-        // Get performance chart data
         $chartData = $this->getPerformanceChartData($user->id);
         
         return view('dashboard.index', compact(

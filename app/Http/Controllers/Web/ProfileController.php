@@ -83,9 +83,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Delete user account.
-     */
     public function delete(Request $request)
     {
         $request->validate([
@@ -97,15 +94,12 @@ class ProfileController extends Controller
         DB::beginTransaction();
         
         try {
-            // Delete user's data
             $user->attempts()->delete();
             $user->leaderboard()->delete();
             $user->achievements()->detach();
             
-            // Logout the user
             Auth::logout();
             
-            // Delete the user
             $user->delete();
             
             DB::commit();
@@ -116,16 +110,13 @@ class ProfileController extends Controller
             return back()->with('error', 'Failed to delete account: ' . $e->getMessage());
         }
     }
-    /**
-     * Display user's quiz history.
-     */
+
     public function history(Request $request)
     {
         $user = auth()->user();
         
         $query = $user->attempts()->with('quiz.category');
         
-        // Apply filters
         if ($request->filled('quiz_id')) {
             $query->where('quiz_id', $request->quiz_id);
         }
@@ -144,7 +135,6 @@ class ProfileController extends Controller
         
         $attempts = $query->orderBy('created_at', 'desc')->paginate(15);
         
-        // Get all quizzes for filter dropdown
         $quizzes = \App\Models\Quiz::whereIn('id', $user->attempts()->pluck('quiz_id')->unique())
             ->orderBy('title')
             ->get(['id', 'title']);
@@ -152,16 +142,11 @@ class ProfileController extends Controller
         return view('profile.history', compact('attempts', 'quizzes'));
     }
 
-
-    /**
-     * Display user's achievements.
-     */
     public function achievements()
     {
         $user = auth()->user()->load('achievements');
         $allAchievements = Achievement::all();
         
-        // Find next achievement to unlock
         $nextAchievement = null;
         $highestProgress = 0;
         

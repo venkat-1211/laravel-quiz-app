@@ -19,7 +19,6 @@ class UserManagementController extends Controller
             }])
             ->withAvg('attempts as average_score', 'percentage_score');
         
-        // Search functionality
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -28,7 +27,6 @@ class UserManagementController extends Controller
             });
         }
         
-        // Filter by role
         if ($request->has('role') && $request->role && $request->role !== 'all') {
             if ($request->role === 'admin') {
                 $query->whereHas('roles', function($q) {
@@ -41,14 +39,12 @@ class UserManagementController extends Controller
             }
         }
         
-        // Filter by status
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('is_active', $request->status === 'active');
         }
         
         $users = $query->orderBy('created_at', 'desc')->paginate(15);
         
-        // Get statistics
         $totalUsers = User::count();
         $activeUsers = User::where('is_active', true)->count();
         $newUsersToday = User::whereDate('created_at', today())->count();
@@ -57,9 +53,6 @@ class UserManagementController extends Controller
         return view('admin.users.index', compact('users', 'totalUsers', 'activeUsers', 'newUsersToday', 'usersWithAttempts'));
     }
 
-    /**
-     * Display the specified user.
-     */
     public function show($id)
     {
         $user = User::with(['attempts.quiz', 'leaderboard', 'achievements'])
@@ -105,14 +98,10 @@ class UserManagementController extends Controller
         return view('admin.users.show', compact('user', 'recentAttempts', 'performanceData', 'stats'));
     }
 
-    /**
-     * Toggle user active status.
-     */
     public function toggleStatus($id)
     {
         $user = User::findOrFail($id);
         
-        // Prevent deactivating yourself
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot deactivate your own account.');
         }
@@ -125,19 +114,14 @@ class UserManagementController extends Controller
         return back()->with('success', "User {$status} successfully.");
     }
 
-    /**
-     * Remove the specified user.
-     */
     public function destroy($id)
     {
         $user = User::findOrFail($id);
         
-        // Prevent deleting yourself
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account.');
         }
         
-        // Soft delete the user
         $user->delete();
         
         return redirect()->route('admin.users.index')

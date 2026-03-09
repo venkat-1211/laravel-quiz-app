@@ -45,7 +45,6 @@ class AttemptDTO
 
     public static function fromModel(Attempt $attempt): self
     {
-        // Ensure scores are calculated if attempt is completed
         if ($attempt->status === 'completed' && $attempt->correct_answers === 0 && $attempt->answers()->count() > 0) {
             $attempt->calculateScore();
         }

@@ -73,7 +73,6 @@ class Achievement extends Model
         if (!$user->achievements()->where('achievement_id', $this->id)->exists()) {
             $user->achievements()->attach($this->id, ['earned_at' => now()]);
             
-            // Update leaderboard badges
             $leaderboard = $user->leaderboard;
             if ($leaderboard) {
                 $badges = $leaderboard->badges ?? [];

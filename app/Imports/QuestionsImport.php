@@ -30,9 +30,8 @@ class QuestionsImport implements ToCollection, WithHeadingRow
             $currentOrder = $quiz->questions()->max('order') + 1;
 
             foreach ($rows as $index => $row) {
-                $rowNumber = $index + 2; // +2 because heading row is 1
+                $rowNumber = $index + 2;
 
-                // Validate row data
                 $validator = Validator::make($row->toArray(), [
                     'question_text' => 'required|string',
                     'option_a' => 'required|string',
@@ -50,14 +49,12 @@ class QuestionsImport implements ToCollection, WithHeadingRow
                     continue;
                 }
 
-                // Prepare options array
                 $options = [];
                 if (!empty($row['option_a'])) $options['A'] = $row['option_a'];
                 if (!empty($row['option_b'])) $options['B'] = $row['option_b'];
                 if (!empty($row['option_c'])) $options['C'] = $row['option_c'];
                 if (!empty($row['option_d'])) $options['D'] = $row['option_d'];
 
-                // Create question
                 Question::create([
                     'quiz_id' => $this->quizId,
                     'question_text' => $row['question_text'],
@@ -72,7 +69,6 @@ class QuestionsImport implements ToCollection, WithHeadingRow
                 $this->successCount++;
             }
 
-            // Update quiz total questions
             $quiz->updateTotalQuestions();
 
             DB::commit();

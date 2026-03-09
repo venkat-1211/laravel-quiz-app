@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Quiz\StoreQuizRequest;
+use App\Http\Requests\Quiz\UpdateQuizRequest;
 use App\Services\Interfaces\QuizServiceInterface;
 use App\Services\Interfaces\CategoryServiceInterface;
 use Illuminate\Http\Request;
@@ -53,7 +54,7 @@ class QuizManagementController extends Controller
         return view('admin.quizzes.edit', compact('quiz', 'categories'));
     }
 
-    public function update(StoreQuizRequest $request, int $id)
+    public function update(UpdateQuizRequest $request, int $id)
     {
         $quizDTO = \App\DTOs\QuizDTO::fromArray($request->validated());
         

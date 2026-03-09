@@ -42,7 +42,15 @@ class Quiz extends Model
         parent::boot();
         
         static::creating(function ($quiz) {
-            $quiz->slug = $quiz->slug ?? Str::slug($quiz->title);
+            if (empty($quiz->slug)) {
+                $quiz->slug = Str::slug($quiz->title);
+            }
+        });
+        
+        static::updating(function ($quiz) {
+            if ($quiz->isDirty('title') && empty($quiz->slug)) {
+                $quiz->slug = Str::slug($quiz->title);
+            }
         });
     }
 

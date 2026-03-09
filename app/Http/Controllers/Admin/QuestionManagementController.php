@@ -115,9 +115,6 @@ class QuestionManagementController extends Controller
         }
     }
 
-    /**
-     * Bulk delete questions
-     */
     public function bulkDelete(Request $request, int $quizId)
     {
         $request->validate([
@@ -141,9 +138,6 @@ class QuestionManagementController extends Controller
         }
     }
 
-    /**
-     * Bulk duplicate questions
-     */
     public function bulkDuplicate(Request $request, int $quizId)
     {
         $request->validate([
@@ -167,9 +161,6 @@ class QuestionManagementController extends Controller
         }
     }
 
-    /**
-     * Preview question (optional)
-     */
     public function preview(int $questionId)
     {
         $question = \App\Models\Question::with('quiz')->findOrFail($questionId);
@@ -177,9 +168,6 @@ class QuestionManagementController extends Controller
         return view('admin.questions.preview', compact('question'));
     }
 
-    /**
-     * Single question duplicate (optional)
-     */
     public function duplicate(int $questionId)
     {
         try {
